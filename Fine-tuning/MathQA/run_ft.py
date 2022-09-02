@@ -14,7 +14,7 @@ import argparse
 import shutil
 import random
 import numpy as np
-torch.cuda.set_device(1)
+torch.cuda.set_device(0)
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
