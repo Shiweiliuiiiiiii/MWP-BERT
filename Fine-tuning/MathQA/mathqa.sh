@@ -2,7 +2,7 @@
 
 python run_ft.py \
     --output_dir output/bert-base-uncased \
-    --bert_pretrain_path pretrained_models/bert-base-uncased \
+    --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en/pytorch_model.bin \
     --data_dir data \
     --train_file MathQA_bert_token_train.json \
     --finetune_from_trainset MathQA_bert_token_train.json \
