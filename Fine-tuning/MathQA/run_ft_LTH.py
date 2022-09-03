@@ -446,7 +446,7 @@ if __name__=='__main__':
     # Iterative magnitude pruning
     for iter in range(starting_iter, args.imp_iters):
         logger.info('******************************************')
-        logger.info('IMP iteration', iter)
+        logger.info('IMP iteration {}'.format(iter))
         logger.info('******************************************')
 
         generate_num_ids = []
