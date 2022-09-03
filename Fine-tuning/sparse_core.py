@@ -62,7 +62,6 @@ class Masking(object):
         self.growth_func = growth_mode
         self.prune_func = prune_mode
         self.redistribution_func = redistribution_mode
-        self.distributed_world_size = self.args.distributed_world_size
 
         self.global_growth = False
         self.global_prune = False
