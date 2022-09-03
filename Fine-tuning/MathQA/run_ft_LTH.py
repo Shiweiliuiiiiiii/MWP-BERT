@@ -435,6 +435,7 @@ if __name__=='__main__':
         if 'iter' in file:
             finished_iters.append(file)
     if finished_iters:
+        logger.info('Already saved files: {}'.format(finished_iters))
         finished_iters = sorted_nicely(finished_iters)
         last_iter = finished_iters[-1]
         starting_iter = int(last_iter.split('_')[-1]) + 1
