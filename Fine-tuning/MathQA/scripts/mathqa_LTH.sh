@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus-per-node=1
 #SBATCH --gpus=1
-#SBATCH -t 1-00:00:00
+#SBATCH -t 3-00:00:00
 #SBATCH --exclusive
 #SBATCH --cpus-per-task=18
 #SBATCH -o MWP-BERT-mathqa-LTH_1.out
@@ -25,7 +25,7 @@ python run_ft_LTH.py \
     --schedule linear \
     --batch_size 8 \
     --learning_rate 0.0001 \
-    --n_epochs 1 \
+    --n_epochs 80 \
     --warmup_steps 4000 \
     --n_save_ckpt 3 \
     --n_val 5 \
