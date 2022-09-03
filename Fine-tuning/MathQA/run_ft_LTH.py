@@ -428,13 +428,18 @@ if __name__=='__main__':
                                                                                 copy_nums, tree=True, use_bert=use_bert, auto_transformer=False, bert_pretrain_path=args.bert_pretrain_path)
 
 
-
-    finished_iters = os.listdir(os.path.join(args.output_dir))
+    
+    output_files = os.listdir(os.path.join(args.output_dir))
+    finished_iters = []
+    for file in output_files:
+        if 'iter' in file:
+            finished_iters.append(file)
     if finished_iters:
         finished_iters = sorted_nicely(finished_iters)
         last_iter = finished_iters[-1]
         starting_iter = int(last_iter.split('_')[-1]) + 1
-    else: starting_iter = 0
+    else:
+        starting_iter = 0
 
     # Iterative magnitude pruning
     for iter in range(starting_iter, args.imp_iters):
