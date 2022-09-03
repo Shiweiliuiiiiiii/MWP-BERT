@@ -13,7 +13,7 @@
 source /home/sliu/miniconda3/etc/profile.d/conda.sh
 source activate slak
 
-python run_ft.py \
+python run_ft_LTH.py \
     --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_lth/ \
     --fix --sparse-init iterative_gm --sparsity 0.2 --imp-iters 11 --sparse \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
