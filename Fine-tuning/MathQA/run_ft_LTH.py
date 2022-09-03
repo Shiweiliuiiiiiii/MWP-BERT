@@ -475,8 +475,8 @@ if __name__=='__main__':
             torch.save(merge.state_dict(),
                        os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed), "merge.ckpt"))
 
-        if args.model_reload_path != '':
-            check_cl_model(args, (test_pairs1, ), generate_num_ids, encoder, predict, generate, merge, output_lang, beam_size)
+        # if args.model_reload_path != '':
+            # check_cl_model(args, (test_pairs1, ), generate_num_ids, encoder, predict, generate, merge, output_lang, beam_size)
 
 
         if not args.only_test:

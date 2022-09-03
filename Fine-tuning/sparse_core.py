@@ -49,9 +49,9 @@ class Masking(object):
             print('Supported modes are:', str(growth_modes))
 
         self.args = args
-        self.fix = self.args.spa.fix
-        self.sparse_init = self.args.spa.sparse_init
-        self.update_frequency = self.args.spa.update_frequency
+        self.fix = self.args.fix
+        self.sparse_init = self.args.sparse_init
+        self.update_frequency = self.args.update_frequency
         self.sparsity = sparsity
         self.device = torch.device('cuda')
         self.growth_mode = growth_mode
