@@ -86,8 +86,8 @@ class Masking(object):
 
 
 
-    def add_module(self, module):
-        self.modules.append(module)
+    def add_module(self, modules):
+        self.modules = modules
         for module in self.modules:
             for name, tensor in module.named_parameters():
                 if len(tensor.size()) == 2 or len(tensor.size()) == 4:
