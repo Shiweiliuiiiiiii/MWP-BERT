@@ -15,7 +15,9 @@ import argparse
 import shutil
 import random
 import numpy as np
-from ..sparse_core import Masking, CosineDecay
+import sys
+sys.path.append('..')
+from sparse_core import Masking, CosineDecay
 
 torch.cuda.set_device(0)
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
