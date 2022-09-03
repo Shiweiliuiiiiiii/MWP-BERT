@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus-per-node=1
 #SBATCH --gpus=1
-#SBATCH -t 4-12:00:00
+#SBATCH -t 3-12:00:00
 #SBATCH --exclusive
 #SBATCH --cpus-per-task=18
 #SBATCH -o MWP-BERT-mathqa-LTH_1.out
