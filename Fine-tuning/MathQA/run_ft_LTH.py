@@ -464,7 +464,8 @@ if __name__=='__main__':
 
         # save initialization
         if iter == 0:
-            os.makedirs(os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed)))
+            if os.path.exists(os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed))):
+                os.makedirs(os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed)))
             torch.save(encoder.state_dict(),
                        os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed), "encoder.ckpt"))
             torch.save(predict.state_dict(),
