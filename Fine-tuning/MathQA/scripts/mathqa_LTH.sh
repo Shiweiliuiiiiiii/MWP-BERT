@@ -15,7 +15,7 @@ source activate slak
 
 python run_ft_LTH.py \
     --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_lth/ \
-    --fix --sparse-init iterative_gm --sparsity 0.2 --imp-iters 11 --sparse \
+    --fix --sparse_init iterative_gm --sparsity 0.2 --imp_iters 11 --sparse \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
     --data_dir data \
     --train_file MathQA_bert_token_train.json \
