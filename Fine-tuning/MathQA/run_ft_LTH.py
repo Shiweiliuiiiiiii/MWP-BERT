@@ -428,7 +428,7 @@ if __name__=='__main__':
                                                                                 copy_nums, tree=True, use_bert=use_bert, auto_transformer=False, bert_pretrain_path=args.bert_pretrain_path)
 
 
-    
+
     output_files = os.listdir(os.path.join(args.output_dir))
     finished_iters = []
     for file in output_files:
@@ -441,11 +441,12 @@ if __name__=='__main__':
     else:
         starting_iter = 0
 
+    logger.info('Starting from {} IMP iteration'.format(starting_iter))
     # Iterative magnitude pruning
     for iter in range(starting_iter, args.imp_iters):
-        print('******************************************')
-        print('IMP iteration', iter)
-        print('******************************************')
+        logger.info('******************************************')
+        logger.info('IMP iteration', iter)
+        logger.info('******************************************')
 
         generate_num_ids = []
         for num in generate_nums:
