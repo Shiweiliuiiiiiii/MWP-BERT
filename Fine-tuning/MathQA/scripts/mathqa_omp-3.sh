@@ -6,7 +6,6 @@
 #SBATCH --gpus-per-node=1
 #SBATCH --gpus=1
 #SBATCH -t 3-00:00:00
-#SBATCH --exclusive
 #SBATCH --cpus-per-task=18
 #SBATCH -o MWP-BERT-mathqa-omp-before-3.out
 
@@ -27,7 +26,7 @@ python run_ft_before_FT.py \
     --dev_file MathQA_bert_token_val.json \
     --test_file MathQA_bert_token_test.json \
     --schedule linear \
-    --batch_size 8 \
+    --batch_size 32 \
     --learning_rate 0.0001 \
     --n_epochs 80 \
     --warmup_steps 4000 \

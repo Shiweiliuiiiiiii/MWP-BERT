@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=MWP-BERT-mathqa-omp-before-2
+#SBATCH --job-name=MWP-BERT-mathqa-snip-rigl-before-3
 #SBATCH -p gpu
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
@@ -7,18 +7,19 @@
 #SBATCH --gpus=1
 #SBATCH -t 3-00:00:00
 #SBATCH --cpus-per-task=18
-#SBATCH -o MWP-BERT-mathqa-omp-before-2.out
+#SBATCH -o MWP-BERT-mathqa-snip-rigl-3.out
 
 source /home/sliu/miniconda3/etc/profile.d/conda.sh
 conda activate prune_cry
 
 
-for sparsity in 0.672 0.738 0.791
+for sparsity in 0.8325 0.866 0.893
 do
 
 python run_ft_before_FT.py \
-    --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_omp_before/$sparsity/ \
-    --fix --sparse_init one_shot_gm --sparsity $sparsity --sparse \
+    --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_snip_rigl_before/$sparsity/ \
+    --sparse_init snip --sparsity $sparsity --sparse \
+    --prune magnitude --prune-rate 0.5 --growth gradient --update-frequency 4000 --redistribution none \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
     --data_dir data \
     --train_file MathQA_bert_token_train.json \

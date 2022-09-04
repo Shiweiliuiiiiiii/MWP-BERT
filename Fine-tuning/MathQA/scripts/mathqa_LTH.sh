@@ -1,12 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name=MWP-BERT-mathqa-LTH_1
+#SBATCH --job-name=MWP-BERT-mathqa-LTH-1
 #SBATCH -p gpu
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus-per-node=1
 #SBATCH --gpus=1
 #SBATCH -t 1-00:00:00
-#SBATCH --exclusive
 #SBATCH --cpus-per-task=18
 #SBATCH -o MWP-BERT-mathqa-LTH-1.out
 
@@ -23,7 +22,7 @@ python run_ft_LTH.py \
     --dev_file MathQA_bert_token_val.json \
     --test_file MathQA_bert_token_test.json \
     --schedule linear \
-    --batch_size 8 \
+    --batch_size 32 \
     --learning_rate 0.0001 \
     --n_epochs 80 \
     --warmup_steps 4000 \

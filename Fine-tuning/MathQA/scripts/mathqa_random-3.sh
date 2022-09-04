@@ -1,20 +1,23 @@
 #!/bin/bash
-#SBATCH --job-name=MWP-BERT-mathqa-dense
+#SBATCH --job-name=MWP-BERT-mathqa-random-before-3
 #SBATCH -p gpu
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus-per-node=1
 #SBATCH --gpus=1
-#SBATCH -t 1-00:00:00
-#SBATCH --exclusive
+#SBATCH -t 3-00:00:00
 #SBATCH --cpus-per-task=18
-#SBATCH -o MWP-BERT-mathqa-dense.out
+#SBATCH -o MWP-BERT-mathqa-random-before-3.out
 
 source /home/sliu/miniconda3/etc/profile.d/conda.sh
 conda activate prune_cry
 
+for sparsity in 0.8325 0.866 0.893
+do
+
 python run_ft.py \
-    --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_dense/ \
+    --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_random_before/$sparsity/ \
+    --fix --sparse_init random --sparsity $sparsity --sparse \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
     --data_dir data \
     --train_file MathQA_bert_token_train.json \
@@ -34,3 +37,4 @@ python run_ft.py \
     --beam_size 5 \
     --dropout 0.5 \
     --seed 17
+done
