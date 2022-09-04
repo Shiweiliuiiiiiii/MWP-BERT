@@ -239,7 +239,7 @@ def train_model(args, train_pairs, test_pairs, generate_num_ids,
         logger.info("--------------------------------")
         del input_batches, input_lengths, output_batches, output_lengths, nums_batches, num_stack_batches, num_pos_batches, num_size_batches
 
-        if epoch % args.n_val == 0 and epoch > args.n_epochs - 5:
+        if epoch % args.n_val == 0 or epoch > args.n_epochs - 5:
             value_ac = 0
             equation_ac = 0
             eval_total = 0
