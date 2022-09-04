@@ -18,7 +18,7 @@ for sparsity in 0.2 0.36 0.488 0.590 0.672 0.738 0.791 0.8325 0.866 0.893
 do
 
 python run_ft.py \
-    --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_omp_before/$sparsity/ \
+    --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_omp_before/$sparsity/ \
     --fix --sparse_init one_shot_gm --sparsity $sparsity --sparse \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
     --data_dir data \
@@ -29,7 +29,7 @@ python run_ft.py \
     --schedule linear \
     --batch_size 8 \
     --learning_rate 0.0001 \
-    --n_epochs 100 \
+    --n_epochs 80 \
     --warmup_steps 4000 \
     --n_save_ckpt 3 \
     --n_val 5 \

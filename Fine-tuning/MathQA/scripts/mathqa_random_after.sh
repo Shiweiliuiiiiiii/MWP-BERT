@@ -24,7 +24,7 @@ python run_ft.py \
     --schedule linear \
     --batch_size 8 \
     --learning_rate 0.0001 \
-    --n_epochs 100 \
+    --n_epochs 80 \
     --warmup_steps 4000 \
     --n_save_ckpt 3 \
     --n_val 5 \
