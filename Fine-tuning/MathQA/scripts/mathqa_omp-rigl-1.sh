@@ -30,7 +30,7 @@ python run_ft_before_FT.py \
     --batch_size 32 \
     --learning_rate 0.0001 \
     --n_epochs 80 \
-    --warmup_steps 4000 \
+    --warmup_steps 100 \
     --n_save_ckpt 3 \
     --n_val 5 \
     --logging_steps 100 \
