@@ -6,7 +6,6 @@
 #SBATCH --gpus-per-node=1
 #SBATCH --gpus=1
 #SBATCH -t 1-2:00:00
-#SBATCH --exclusive
 #SBATCH --cpus-per-task=18
 #SBATCH -o MWP-BERT-mathqa-dense.out
 
