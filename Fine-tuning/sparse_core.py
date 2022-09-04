@@ -93,16 +93,8 @@ class Masking(object):
                     self.names.append(name)
                     self.masks[name] = torch.ones_like(tensor, dtype=torch.float32, requires_grad=False).to(self.device)
 
-        print('Removing in_proj_weight')
-        self.remove_weight_partial_name('in_proj_weight')
-        print('Removing out_proj_weight')
-        self.remove_weight_partial_name('out_proj_weight')
-        print('Removing fc1_weight')
-        self.remove_weight_partial_name('fc1_weight')
-        print('Removing fc2_weight')
-        self.remove_weight_partial_name('fc2_weight')
-        print('lm_head.dense.weight')
-        self.remove_weight_partial_name('lm_head.dense.weight')
+        print('Removing bert_model.pooler')
+        self.remove_weight_partial_name('pooler')
 
 
     def remove_weight(self, name):
@@ -408,7 +400,6 @@ class Masking(object):
                 if name not in self.masks: continue
                 new_mask = self.masks[name].data.byte()
                 # growth
-                print(name)
                 new_mask = self.growth_func(self, name, new_mask, math.floor(self.name2removed[name]), weight)
                 self.masks[name][:] = new_mask.float()
 
