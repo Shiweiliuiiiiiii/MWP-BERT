@@ -222,6 +222,7 @@ def train_model(args, train_pairs, test_pairs, generate_num_ids,
             torch.nn.utils.clip_grad_norm_(need_optimized_parameters, args.max_grad_norm)
 
             optimizer.step()
+            if mask: mask.step()
             scheduler.step()
 
             encoder.zero_grad()
