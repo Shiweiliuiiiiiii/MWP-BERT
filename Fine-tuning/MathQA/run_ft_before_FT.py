@@ -112,7 +112,7 @@ def initial_model(output_lang, embedding_size, hidden_size, args, copy_nums, gen
     return encoder, predict, generate, merge
 
 def train_model(args, train_pairs, test_pairs, generate_num_ids, 
-                    encoder, predict, generate, merge, output_lang, IMP_iter):
+                    encoder, predict, generate, merge, output_lang):
     batch_size = args.batch_size
     need_optimized_parameters = []
     for module in [encoder, predict, generate, merge]:
