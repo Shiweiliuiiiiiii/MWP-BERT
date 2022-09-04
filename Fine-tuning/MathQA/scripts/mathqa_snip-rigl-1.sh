@@ -19,7 +19,7 @@ do
 python run_ft_before_FT.py \
     --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_snip_rigl_before/$sparsity/ \
     --sparse_init snip --sparsity $sparsity --sparse \
-    --prune magnitude --prune-rate 0.5 --growth gradient --update-frequency 4000 --redistribution none \
+    --prune magnitude --prune_rate 0.5 --growth gradient --update_frequency 4000 --redistribution none \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
     --data_dir data \
     --train_file MathQA_bert_token_train.json \
