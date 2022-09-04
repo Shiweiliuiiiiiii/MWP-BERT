@@ -67,7 +67,6 @@ class Masking(object):
         self.global_prune = False
 
         self.masks = {}
-        self.modules = []
         self.names = []
         self.optimizer = optimizer
         self.baseline_nonzero = None
@@ -184,9 +183,10 @@ class Masking(object):
             threshold, _ = torch.topk(all_scores, num_params_to_keep, sorted=True)
             acceptable_score = threshold[-1]
 
-            for name, weight in model.named_parameters():
-                if name not in self.masks: continue
-                self.masks[name] = ((torch.abs(weight)) > acceptable_score).float()
+            for module in self.modules:
+                for name, weight in module.named_parameters():
+                    if name not in self.masks: continue
+                    self.masks[name] = ((torch.abs(weight)) > acceptable_score).float()
 
         elif mode == 'random':
             print('initialize by random pruning')
