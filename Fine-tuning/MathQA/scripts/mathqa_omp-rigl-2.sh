@@ -5,7 +5,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus-per-node=1
 #SBATCH --gpus=1
-#SBATCH -t 3-00:00:00
+#SBATCH -t 3-12:00:00
 #SBATCH --cpus-per-task=18
 #SBATCH -o MWP-BERT-mathqa-omp-rigl-before-2.out
 
@@ -13,7 +13,7 @@ source /home/sliu/miniconda3/etc/profile.d/conda.sh
 conda activate prune_cry
 
 
-for sparsity in 0.672 0.738 0.791
+for sparsity in 0.738 0.791  0.8325 0.866 0.893
 do
 
 python run_ft_before_FT.py \
