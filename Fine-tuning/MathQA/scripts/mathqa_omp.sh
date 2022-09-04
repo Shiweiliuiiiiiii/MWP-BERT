@@ -11,7 +11,7 @@
 #SBATCH -o MWP-BERT-mathqa-omp-before.out
 
 source /home/sliu/miniconda3/etc/profile.d/conda.sh
-source activate slak
+source activate prune_cry
 
 
 for sparsity in 0.2 0.36 0.488 0.590 0.672 0.738 0.791 0.8325 0.866 0.893
