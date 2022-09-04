@@ -17,7 +17,7 @@ conda activate prune_cry
 for sparsity in 0.2 0.36 0.488 0.590 0.672 0.738 0.791 0.8325 0.866 0.893
 do
 
-python run_ft.py \
+python run_ft_before_FT.py \
     --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_omp_before/$sparsity/ \
     --fix --sparse_init one_shot_gm --sparsity $sparsity --sparse \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
