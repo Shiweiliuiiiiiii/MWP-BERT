@@ -288,13 +288,9 @@ def train_model(args, train_pairs, test_pairs, generate_num_ids,
     return best_metric
 
 def test_model(args, test_pairs, generate_num_ids, encoder, predict, generate, merge, output_lang, beam_size):
-    output_files = os.listdir(os.path.join(args.output_dir))
-    tested_iters = []
-    for file in output_files:
-        if 'iter' in file:
-            tested_iters.append(file)
-    tested_iters = sorted_nicely(tested_iters)
-    epoch = tested_iters[-1]
+    epochs = os.listdir(os.path.join(args.output_dir))
+    epochs = sorted_nicely(epochs)
+    epoch = epochs[-1]
 
     logger.info("testing -> " + os.path.join(args.output_dir, epoch))
     encoder.load_state_dict(torch.load(os.path.join(args.output_dir, epoch, "encoder.ckpt")))

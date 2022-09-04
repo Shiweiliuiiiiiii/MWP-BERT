@@ -133,62 +133,54 @@ def train_model(args, train_pairs, test_pairs, generate_num_ids,
 
     # performing pruning at the beginning of each IMP iter
     mask = None
-    if iter != 0:
-        modules = [encoder, predict, generate, merge]
-        input_batches, input_lengths, output_batches, output_lengths, nums_batches, num_stack_batches, num_pos_batches, num_size_batches = prepare_train_batch(train_pairs, batch_size)
+    modules = [encoder, predict, generate, merge]
+    input_batches, input_lengths, output_batches, output_lengths, nums_batches, num_stack_batches, num_pos_batches, num_size_batches = prepare_train_batch(train_pairs, batch_size)
 
-        decay = CosineDecay(args.prune_rate, len(input_lengths))
-        mask = Masking(optimizer, prune_rate_decay=decay, prune_rate=args.prune_rate,
-                       sparsity=args.sparsity, prune_mode=args.prune, growth_mode=args.growth,
-                       redistribution_mode=args.redistribution, fp16=args.fp16, args=args)
-        mask.add_module(modules)
+    decay = CosineDecay(args.prune_rate, len(input_lengths))
+    mask = Masking(optimizer, prune_rate_decay=decay, prune_rate=args.prune_rate,
+                   sparsity=args.sparsity, prune_mode=args.prune, growth_mode=args.growth,
+                   redistribution_mode=args.redistribution, fp16=args.fp16, args=args)
+    mask.add_module(modules)
 
-        if mask.sparse_init == 'snip':
-            encoder_copy, predict_copy, generate_copy, merge_copy = copy.deepcopy(encoder), copy.deepcopy(predict), copy.deepcopy(generate), copy.deepcopy(merge)
-            encoder_copy.train()
-            predict_copy.train()
-            generate_copy.train()
-            merge_copy.train()
+    if mask.sparse_init == 'snip':
+        encoder_copy, predict_copy, generate_copy, merge_copy = copy.deepcopy(encoder), copy.deepcopy(predict), copy.deepcopy(generate), copy.deepcopy(merge)
+        encoder_copy.train()
+        predict_copy.train()
+        generate_copy.train()
+        merge_copy.train()
+        modules_copy = [encoder_copy, predict_copy, generate_copy, merge_copy]
 
-            idx = 0
-            loss = train_tree(
-                input_batches[idx], input_lengths[idx], output_batches[idx], output_lengths[idx],
-                num_stack_batches[idx], num_size_batches[idx], generate_num_ids, encoder, predict, generate, merge,
-                output_lang, num_pos_batches[idx])
-            # torch.nn.utils.clip_grad_norm_(need_optimized_parameters, args.max_grad_norm)
+        idx = 0
+        loss_snip = train_tree(
+            input_batches[idx], input_lengths[idx], output_batches[idx], output_lengths[idx],
+            num_stack_batches[idx], num_size_batches[idx], generate_num_ids, encoder_copy, predict_copy, generate_copy, merge_copy,
+            output_lang, num_pos_batches[idx])
+        # torch.nn.utils.clip_grad_norm_(need_optimized_parameters, args.max_grad_norm)
 
-            grads_abs = []
-            for module in modules:
-                for name, weight in module.named_parameters():
-                    if name not in mask.masks: continue
-                    grads_abs.append(torch.abs(weight * weight.grad))
+        grads_abs = []
+        for module in modules_copy:
+            for name, weight in module.named_parameters():
+                if name not in mask.masks: continue
+                grads_abs.append(torch.abs(weight * weight.grad))
 
-            # Gather all scores in a single vector and normalise
-            all_scores = torch.cat([torch.flatten(x) for x in grads_abs])
+        # Gather all scores in a single vector and normalise
+        all_scores = torch.cat([torch.flatten(x) for x in grads_abs])
 
-            num_params_to_keep = int(len(all_scores) * (1 - mask.sparsity))
-            threshold, _ = torch.topk(all_scores, num_params_to_keep + 1, sorted=True)
-            acceptable_score = threshold[-1]
+        num_params_to_keep = int(len(all_scores) * (1 - mask.sparsity))
+        threshold, _ = torch.topk(all_scores, num_params_to_keep + 1, sorted=True)
+        acceptable_score = threshold[-1]
 
-            snip_masks = []
-            for i, g in enumerate(grads_abs):
-                mask = (g > acceptable_score).float()
-                snip_masks.append(mask)
+        snip_masks = []
+        for i, g in enumerate(grads_abs):
+            mask = (g > acceptable_score).float()
+            snip_masks.append(mask)
 
-            for snip_mask, name in zip(snip_masks, mask.masks):
-                mask.masks[name] = snip_mask
-        else:
-            mask.init(model=modules, train_loader=None, device=mask.device, mode=mask.sparse_init, density=(1 - args.sparsity))
-        mask.apply_mask()
-        mask.print_status()
-
-    # load the pretrained initialization
-    logger.info('load LTH initialization.')
-    encoder.load_state_dict(torch.load(os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed), "encoder.ckpt")))
-    predict.load_state_dict(torch.load(os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed),  "predict.ckpt")))
-    generate.load_state_dict(torch.load(os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed), "generate.ckpt")))
-    merge.load_state_dict(torch.load(os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed), "merge.ckpt")))
-    if mask: mask.apply_mask()
+        for snip_mask, name in zip(snip_masks, mask.masks):
+            mask.masks[name] = snip_mask
+    else:
+        mask.init(model=modules, train_loader=None, device=mask.device, mode=mask.sparse_init, density=(1 - args.sparsity))
+    mask.apply_mask()
+    mask.print_status()
 
     ############## code for sparse #################
 
@@ -278,29 +270,22 @@ def train_model(args, train_pairs, test_pairs, generate_num_ids,
 
                 logger.info("saving best checkpoint")
 
-                if os.path.exists(os.path.join(args.output_dir, "IMP_best_iter_{}".format(IMP_iter))):
-                     shutil.rmtree(os.path.join(args.output_dir, "IMP_best_iter_{}".format(IMP_iter)))
-                os.makedirs(os.path.join(args.output_dir, "IMP_best_iter_{}".format(IMP_iter)))
-                torch.save(encoder.state_dict(), os.path.join(args.output_dir, "IMP_best_iter_{}".format(IMP_iter), "encoder.ckpt"))
-                torch.save(predict.state_dict(), os.path.join(args.output_dir, "IMP_best_iter_{}".format(IMP_iter), "predict.ckpt"))
-                torch.save(generate.state_dict(), os.path.join(args.output_dir, "IMP_best_iter_{}".format(IMP_iter), "generate.ckpt"))
-                torch.save(merge.state_dict(), os.path.join(args.output_dir, "IMP_best_iter_{}".format(IMP_iter), "merge.ckpt"))
+                if os.path.exists(os.path.join(args.output_dir)):
+                     shutil.rmtree(os.path.join(args.output_dir))
+                os.makedirs(os.path.join(args.output_dir))
+                torch.save(encoder.state_dict(), os.path.join(args.output_dir, "encoder.ckpt"))
+                torch.save(predict.state_dict(), os.path.join(args.output_dir,  "predict.ckpt"))
+                torch.save(generate.state_dict(), os.path.join(args.output_dir,  "generate.ckpt"))
+                torch.save(merge.state_dict(), os.path.join(args.output_dir,  "merge.ckpt"))
     return best_metric
 
 def test_model(args, test_pairs, generate_num_ids, encoder, predict, generate, merge, output_lang, beam_size):
-    output_files = os.listdir(os.path.join(args.output_dir))
-    tested_iters = []
-    for file in output_files:
-        if 'iter' in file:
-            tested_iters.append(file)
-    tested_iters = sorted_nicely(tested_iters)
-    epoch = tested_iters[-1]
 
-    logger.info("testing -> " + os.path.join(args.output_dir, epoch))
-    encoder.load_state_dict(torch.load(os.path.join(args.output_dir, epoch, "encoder.ckpt")))
-    predict.load_state_dict(torch.load(os.path.join(args.output_dir, epoch, "predict.ckpt")))
-    generate.load_state_dict(torch.load(os.path.join(args.output_dir, epoch, "generate.ckpt")))
-    merge.load_state_dict(torch.load(os.path.join(args.output_dir, epoch, "merge.ckpt")))
+    logger.info("testing -> " + os.path.join(args.output_dir))
+    encoder.load_state_dict(torch.load(os.path.join(args.output_dir, "encoder.ckpt")))
+    predict.load_state_dict(torch.load(os.path.join(args.output_dir, "predict.ckpt")))
+    generate.load_state_dict(torch.load(os.path.join(args.output_dir, "generate.ckpt")))
+    merge.load_state_dict(torch.load(os.path.join(args.output_dir, "merge.ckpt")))
     for test_pair in test_pairs:
         value_ac = 0
         equation_ac = 0
@@ -431,61 +416,22 @@ if __name__=='__main__':
     input_lang, output_lang, train_pairs, (test_pairs1, val_pairs1), len_bert_token = prepare_data(pairs_trained, (pairs_tested1, pairs_valed1), 5, generate_nums,
                                                                                 copy_nums, tree=True, use_bert=use_bert, auto_transformer=False, bert_pretrain_path=args.bert_pretrain_path)
 
+    generate_num_ids = []
+    for num in generate_nums:
+        generate_num_ids.append(output_lang.word2index[num])
 
+    encoder, predict, generate, merge = initial_model(output_lang, embedding_size, hidden_size, args, copy_nums, generate_nums)
+    if torch.cuda.is_available():
+        encoder.cuda()
+        predict.cuda()
+        generate.cuda()
+        merge.cuda()
 
-    output_files = os.listdir(os.path.join(args.output_dir))
-    finished_iters = []
-    for file in output_files:
-        if 'iter' in file:
-            finished_iters.append(file)
-    if finished_iters:
-        logger.info('Already saved files: {}'.format(finished_iters))
-        finished_iters = sorted_nicely(finished_iters)
-        last_iter = finished_iters[-1]
-        starting_iter = int(last_iter.split('_')[-1]) + 1
-    else:
-        starting_iter = 0
+    if args.model_reload_path != '':
+        check_cl_model(args, (test_pairs1, ), generate_num_ids,encoder, predict, generate, merge, output_lang, beam_size)
 
-    logger.info('Starting from {} IMP iteration'.format(starting_iter))
-    # Iterative magnitude pruning
-    for iter in range(starting_iter, args.imp_iters):
-        logger.info('******************************************')
-        logger.info('IMP iteration {}'.format(iter))
-        logger.info('******************************************')
-
-        generate_num_ids = []
-        for num in generate_nums:
-            generate_num_ids.append(output_lang.word2index[num])
-
-        args.model_reload_path = '' if iter == 0 else os.path.join(args.output_dir, "IMP_best_iter_{}".format(iter - 1))
-
-        encoder, predict, generate, merge = initial_model(output_lang, embedding_size, hidden_size, args, copy_nums, generate_nums)
-        if torch.cuda.is_available():
-            encoder.cuda()
-            predict.cuda()
-            generate.cuda()
-            merge.cuda()
-
-        # save initialization
-        if iter == 0:
-            if not os.path.exists(os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed))):
-                os.makedirs(os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed)))
-            torch.save(encoder.state_dict(),
-                       os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed), "encoder.ckpt"))
-            torch.save(predict.state_dict(),
-                       os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed), "predict.ckpt"))
-            torch.save(generate.state_dict(),
-                       os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed), "generate.ckpt"))
-            torch.save(merge.state_dict(),
-                       os.path.join(args.output_dir, "Initialization_seed{}".format(args.seed), "merge.ckpt"))
-
-        # if args.model_reload_path != '':
-            # check_cl_model(args, (test_pairs1, ), generate_num_ids, encoder, predict, generate, merge, output_lang, beam_size)
-
-
-        if not args.only_test:
-            train_model(args, train_pairs, (val_pairs1, ), generate_num_ids,
-                        encoder, predict, generate, merge, output_lang, iter)
-
-        test_model(args, (test_pairs1, ), generate_num_ids,encoder, predict, generate, merge, output_lang, beam_size)
+    if not args.only_test:
+        train_model(args, train_pairs, (val_pairs1, ), generate_num_ids,
+                    encoder, predict, generate, merge, output_lang)
+    test_model(args, (test_pairs1, ), generate_num_ids,encoder, predict, generate, merge, output_lang, beam_size)
 

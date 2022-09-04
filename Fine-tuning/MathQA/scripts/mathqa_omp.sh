@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=MWP-BERT-mathqa-dense
+#SBATCH --job-name=MWP-BERT-mathqa-omp-before
 #SBATCH -p gpu
 #SBATCH -N 1
 #SBATCH --ntasks-per-node=1
@@ -8,13 +8,18 @@
 #SBATCH -t 1-00:00:00
 #SBATCH --exclusive
 #SBATCH --cpus-per-task=18
-#SBATCH -o MWP-BERT-mathqa-dense.out
+#SBATCH -o MWP-BERT-mathqa-omp-before.out
 
 source /home/sliu/miniconda3/etc/profile.d/conda.sh
 source activate slak
 
+
+for sparsity in 0.2 0.36 0.488 0.590 0.672 0.738 0.791 0.8325 0.866 0.893
+do
+
 python run_ft.py \
-    --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_dense/ \
+    --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_omp_before/$sparsity/ \
+    --fix --sparse_init one_shot_gm --sparsity $sparsity --sparse \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
     --data_dir data \
     --train_file MathQA_bert_token_train.json \
@@ -34,3 +39,5 @@ python run_ft.py \
     --beam_size 5 \
     --dropout 0.5 \
     --seed 17
+
+dome
