@@ -172,8 +172,8 @@ def train_model(args, train_pairs, test_pairs, generate_num_ids,
 
         snip_masks = []
         for i, g in enumerate(grads_abs):
-            mask = (g > acceptable_score).float()
-            snip_masks.append(mask)
+            mask_ = (g > acceptable_score).float()
+            snip_masks.append(mask_)
 
         for snip_mask, name in zip(snip_masks, mask.masks):
             mask.masks[name] = snip_mask
