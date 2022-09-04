@@ -5,13 +5,13 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --gpus-per-node=1
 #SBATCH --gpus=1
-#SBATCH -t 3-12:00:00
+#SBATCH -t 1-00:00:00
 #SBATCH --exclusive
 #SBATCH --cpus-per-task=18
-#SBATCH -o MWP-BERT-mathqa-LTH_1.out
+#SBATCH -o MWP-BERT-mathqa-LTH-1.out
 
 source /home/sliu/miniconda3/etc/profile.d/conda.sh
-source activate slak
+source activate prune_cry
 
 python run_ft_LTH.py \
     --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_lth/ \
