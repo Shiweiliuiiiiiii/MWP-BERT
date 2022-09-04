@@ -40,4 +40,4 @@ python run_ft.py \
     --dropout 0.5 \
     --seed 17
 
-dome
+done
