@@ -408,6 +408,7 @@ class Masking(object):
                 if name not in self.masks: continue
                 new_mask = self.masks[name].data.byte()
                 # growth
+                print(name)
                 new_mask = self.growth_func(self, name, new_mask, math.floor(self.name2removed[name]), weight)
                 self.masks[name][:] = new_mask.float()
 
