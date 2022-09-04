@@ -15,7 +15,7 @@ conda activate prune_cry
 for sparsity in 0.8325 0.866 0.893
 do
 
-python run_ft.py \
+python run_ft_before_FT.py \
     --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_random_before/$sparsity/ \
     --fix --sparse_init random --sparsity $sparsity --sparse \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
@@ -25,7 +25,7 @@ python run_ft.py \
     --dev_file MathQA_bert_token_val.json \
     --test_file MathQA_bert_token_test.json \
     --schedule linear \
-    --batch_size 8 \
+    --batch_size 32 \
     --learning_rate 0.0001 \
     --n_epochs 80 \
     --warmup_steps 4000 \

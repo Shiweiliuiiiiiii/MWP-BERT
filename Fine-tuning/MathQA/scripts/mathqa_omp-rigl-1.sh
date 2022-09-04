@@ -19,7 +19,7 @@ do
 python run_ft_before_FT.py \
     --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_omp_rigl_before/$sparsity/ \
     --sparse_init one_shot_gm --sparsity $sparsity --sparse \
-    --prune magnitude --prune_rate 0.5 --growth gradient --update_frequency 4000 --redistribution none \
+    --prune magnitude --prune_rate 0.5 --growth gradient --update_frequency 100 --redistribution none \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
     --data_dir data \
     --train_file MathQA_bert_token_train.json \
@@ -30,7 +30,7 @@ python run_ft_before_FT.py \
     --batch_size 32 \
     --learning_rate 0.0001 \
     --n_epochs 80 \
-    --warmup_steps 100 \
+    --warmup_steps 4000 \
     --n_save_ckpt 3 \
     --n_val 5 \
     --logging_steps 100 \
