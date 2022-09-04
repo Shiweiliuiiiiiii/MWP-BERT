@@ -11,7 +11,7 @@
 #SBATCH -o MWP-BERT-mathqa-dense.out
 
 source /home/sliu/miniconda3/etc/profile.d/conda.sh
-source activate slak
+conda activate prune_cry
 
 python run_ft.py \
     --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_dense/ \

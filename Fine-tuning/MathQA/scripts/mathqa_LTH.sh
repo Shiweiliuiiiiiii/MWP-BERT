@@ -11,7 +11,7 @@
 #SBATCH -o MWP-BERT-mathqa-LTH-1.out
 
 source /home/sliu/miniconda3/etc/profile.d/conda.sh
-source activate prune_cry
+conda activate prune_cry
 
 python run_ft_LTH.py \
     --output_dir /home/sliu/project_space/pruning_fails/QA/mathQA/bert_lth/ \
