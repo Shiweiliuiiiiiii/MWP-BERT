@@ -13,7 +13,7 @@ source /home/sliu/miniconda3/etc/profile.d/conda.sh
 conda activate prune_cry
 
 
-for sparsity in 0.893
+for sparsity in 0.99
 do
 
 python run_ft_before_FT.py \
