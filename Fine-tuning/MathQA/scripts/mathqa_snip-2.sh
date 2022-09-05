@@ -13,12 +13,12 @@ source /home/sliu/miniconda3/etc/profile.d/conda.sh
 conda activate prune_cry
 
 
-for sparsity in 0.738 0.791  0.8325 0.866 0.893
+for sparsity in 0.893
 do
 
 python run_ft_before_FT.py \
-    --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_snip_before/$sparsity/ \
-    --fix --sparse_init snip --sparsity $sparsity --sparse \
+    --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_snip_before/0.893/ \
+    --fix --sparse_init snip --sparsity 0.893 --sparse \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
     --data_dir data \
     --train_file MathQA_bert_token_train.json \
