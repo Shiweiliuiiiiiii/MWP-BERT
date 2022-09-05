@@ -17,8 +17,8 @@ for sparsity in 0.99
 do
 
 python run_ft_before_FT.py \
-    --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_snip_before/0.893/ \
-    --fix --sparse_init snip --sparsity 0.893 --sparse \
+    --output_dir /home/sliu/project_space/pruning_cfails/QA/mathQA/bert_snip_before/0.99/ \
+    --fix --sparse_init snip --sparsity 0.99 --sparse \
     --bert_pretrain_path /home/sliu/project_space/pruning_fails/QA/mathQA/pretrained_models/MWP-BERT_en \
     --data_dir data \
     --train_file MathQA_bert_token_train.json \
