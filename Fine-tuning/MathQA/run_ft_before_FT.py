@@ -138,7 +138,7 @@ def train_model(args, train_pairs, test_pairs, generate_num_ids,
         modules = [encoder, predict, generate, merge]
         input_batches, input_lengths, output_batches, output_lengths, nums_batches, num_stack_batches, num_pos_batches, num_size_batches = prepare_train_batch(train_pairs, batch_size)
 
-        decay = CosineDecay(args.prune_rate, len(input_lengths))
+        decay = CosineDecay(args.prune_rate, int(args.n_epochs * len(input_lengths)))
         mask = Masking(optimizer, prune_rate_decay=decay, prune_rate=args.prune_rate,
                        sparsity=args.sparsity, prune_mode=args.prune, growth_mode=args.growth,
                        redistribution_mode=args.redistribution, fp16=args.fp16, args=args)

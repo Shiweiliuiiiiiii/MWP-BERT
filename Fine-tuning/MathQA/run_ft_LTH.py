@@ -137,48 +137,12 @@ def train_model(args, train_pairs, test_pairs, generate_num_ids,
         modules = [encoder, predict, generate, merge]
         input_batches, input_lengths, output_batches, output_lengths, nums_batches, num_stack_batches, num_pos_batches, num_size_batches = prepare_train_batch(train_pairs, batch_size)
 
-        decay = CosineDecay(args.prune_rate, len(input_lengths))
+        decay = CosineDecay(args.prune_rate, int(args.n_epochs * len(input_lengths)))
         mask = Masking(optimizer, prune_rate_decay=decay, prune_rate=args.prune_rate,
                        sparsity=args.sparsity, prune_mode=args.prune, growth_mode=args.growth,
                        redistribution_mode=args.redistribution, fp16=args.fp16, args=args)
         mask.add_module(modules)
-
-        if mask.sparse_init == 'snip':
-            encoder_copy, predict_copy, generate_copy, merge_copy = copy.deepcopy(encoder), copy.deepcopy(predict), copy.deepcopy(generate), copy.deepcopy(merge)
-            encoder_copy.train()
-            predict_copy.train()
-            generate_copy.train()
-            merge_copy.train()
-
-            idx = 0
-            loss = train_tree(
-                input_batches[idx], input_lengths[idx], output_batches[idx], output_lengths[idx],
-                num_stack_batches[idx], num_size_batches[idx], generate_num_ids, encoder, predict, generate, merge,
-                output_lang, num_pos_batches[idx])
-            # torch.nn.utils.clip_grad_norm_(need_optimized_parameters, args.max_grad_norm)
-
-            grads_abs = []
-            for module in modules:
-                for name, weight in module.named_parameters():
-                    if name not in mask.masks: continue
-                    grads_abs.append(torch.abs(weight * weight.grad))
-
-            # Gather all scores in a single vector and normalise
-            all_scores = torch.cat([torch.flatten(x) for x in grads_abs])
-
-            num_params_to_keep = int(len(all_scores) * (1 - mask.sparsity))
-            threshold, _ = torch.topk(all_scores, num_params_to_keep + 1, sorted=True)
-            acceptable_score = threshold[-1]
-
-            snip_masks = []
-            for i, g in enumerate(grads_abs):
-                mask = (g > acceptable_score).float()
-                snip_masks.append(mask)
-
-            for snip_mask, name in zip(snip_masks, mask.masks):
-                mask.masks[name] = snip_mask
-        else:
-            mask.init(model=modules, train_loader=None, device=mask.device, mode=mask.sparse_init, density=(1 - args.sparsity))
+        mask.init(model=modules, train_loader=None, device=mask.device, mode=mask.sparse_init, density=(1 - args.sparsity))
         mask.apply_mask()
         mask.print_status()
 
